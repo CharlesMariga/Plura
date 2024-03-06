@@ -1,12 +1,22 @@
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { pricingCards } from "@/lib/constants";
+import { cn } from "@/lib/utils";
+import { CheckIcon } from "@radix-ui/react-icons";
 import clsx from "clsx";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
     <>
-      <section className="relative flex h-full w-full flex-col items-center justify-center pt-36">
+      <section className="relative mt-[70px] flex w-full flex-col items-center justify-center md:mt-0 md:h-full md:pt-44">
         <div className="absolute bottom-0 left-0 right-0 top-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#161616_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
         <p className="text-center">Run your agency, in one place</p>
         <div className="relative bg-gradient-to-r from-primary to-secondary-foreground bg-clip-text text-transparent">
@@ -27,14 +37,15 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="flex flex-col items-center justify-center gap-4 md:mt-20">
-        <h2 className="text-center text-4xl">Choose what fits your right</h2>
+      <section className="mt-10 flex flex-col items-center justify-center gap-4 md:mt-56">
+        <h2 className="text-center text-4xl">Choose what fits you right</h2>
         <p className="text-muted-forground text-center">
           Out straightforward pricing plans are tailored to meet your needs. If{" "}
           {"yout're"} not <br /> ready to commit, you can get started for free.
         </p>
-        <div className="mt-6 flex flex-wrap items-center justify-items-center gap-4">
+        <div className="mt-6 flex flex-wrap justify-center gap-4">
           {pricingCards.map((card) => (
+            // TODO: Wire up free product from stripe
             <Card
               key={card.title}
               className={clsx("flex w-[300px] flex-col justify-between", {
@@ -44,16 +55,44 @@ export default function Home() {
               <CardHeader>
                 <CardTitle
                   className={clsx("", {
-                    "text-muted-foreground": card.title !== "Unlimted Saas",
+                    "text-muted-foreground": card.title !== "Unlimited Saas",
                   })}
                 >
                   {card.title}
                 </CardTitle>
+                <CardDescription>{card.description}</CardDescription>
               </CardHeader>
+              <CardContent>
+                <span className="text-4xl font-bold">{card.price}</span>
+                <span className="text-muted-foreground">/m</span>
+              </CardContent>
+              <CardFooter className="flex flex-col items-start gap-4">
+                <div>
+                  {card.features.map((feature) => (
+                    <div key={feature} className="flex items-center gap-2">
+                      <CheckIcon className="text-muted-foreground" />
+                      <p>{feature}</p>
+                    </div>
+                  ))}
+                </div>
+                <Link
+                  href={`/agency?plan=${card.priceId}`}
+                  className={cn(
+                    clsx(
+                      "w-full rounded-md bg-primary p-2 text-center text-white",
+                      {
+                        "!bg-muted-foreground": card.title !== "Unlimited Saas",
+                      },
+                    ),
+                  )}
+                >
+                  Get started
+                </Link>
+              </CardFooter>
             </Card>
           ))}
         </div>
-      </div>
+      </section>
     </>
   );
 }
