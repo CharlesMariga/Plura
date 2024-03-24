@@ -33,6 +33,7 @@ import {
   initUser,
   saveActivityLogsNotification,
   updateAgencyDetails,
+  upsertAgency,
 } from "@/lib/queries";
 import { Button } from "../ui/button";
 import { ReloadIcon } from "@radix-ui/react-icons";
@@ -46,6 +47,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
+import { v4 } from "uuid";
 
 type Props = {
   data?: Partial<Agency>;
@@ -126,10 +128,39 @@ const AgencyDetails = ({ data }: Props) => {
       // TODO: customerId
       newUserData = await initUser({ role: "AGENCY_OWNER" });
 
-      if (!data?.customerId) {
-        // const response = await
+      if (!data?.id) {
+        await upsertAgency({
+          id: data?.id ? data.id : v4(),
+          address: values.address,
+          agencyLogo: values.agencyLogo,
+          city: values.city,
+          companyPhone: values.companyPhone,
+          country: values.country,
+          name: values.name,
+          state: values.state,
+          whiteLabel: values.whiteLabel,
+          zipCode: values.zipCode,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          companyEmail: values.companyEmail,
+          connectAccountId: "",
+          goal: 5,
+        });
+
+        toast({
+          title: "Created Agency",
+        });
+
+        return router.refresh();
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log("Error: ", error);
+      toast({
+        variant: "destructive",
+        title: "Oppse!",
+        description: "Could not create your agency",
+      });
+    }
   }
 
   async function handleDeleteAgency() {

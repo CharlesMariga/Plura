@@ -6,6 +6,8 @@ import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "./api/uploadthing/core";
+import ModalProvider from "@/providers/modal-provider";
+import { Toaster } from "@/components/ui/toaster";
 
 const font = DM_Sans({ subsets: ["latin"] });
 
@@ -21,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={font.className}>
+      <body className={font.className} suppressHydrationWarning>
         <NextSSRPlugin
           /**
            * The `extractRouterConfig` will extract **only** the route configs
@@ -37,7 +39,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <ModalProvider>
+            {children}
+            <Toaster />
+          </ModalProvider>
         </ThemeProvider>
       </body>
     </html>
